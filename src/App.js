@@ -14,7 +14,7 @@ const App = () => {
             <Switch>
                 <GuardedRoute path="/" exact component={Dashboard} />
                 <GuardedRoute path="/profile" exact component={UserProfile} />
-                {/* Cannot access those route when logged */}
+                {/* Cannot access those route when authenticate */}
                 <PublicRoute path="/login" exact component={Login} />
                 <PublicRoute path="/register" exact component={Register} />
                 <PublicRoute
