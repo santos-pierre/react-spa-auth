@@ -4,20 +4,23 @@ import usersClient from '../../api/users/usersClient';
 import ButtonForm from '../../components/ButtonForm/ButtonForm';
 import HeaderForm from '../../components/HeaderForm/HeaderForm';
 import InputForm from '../../components/InputForm/InputForm';
-import ScreenCenter from '../../layouts/ScreenCenter/ScreenCenter';
-import { useQuery } from '../../utils/customHooks';
+import Guest from '../../layouts/Guest/Guest';
+import { getRoute } from '../../routes/routes';
+import { useQuery } from './../../utils/custom-hooks/useQuery.js';
 
 const ResetPassword = () => {
     const query = useQuery();
     const history = useHistory();
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
 
     const resetPassword = async (e) => {
         e.preventDefault();
-        setErrors({});
+        setErrors({ email: [], password: [] });
+        setIsLoading(true);
         try {
             if (password.trim() && passwordConfirmation.trim()) {
                 await usersClient.resetPassword({
@@ -26,20 +29,32 @@ const ResetPassword = () => {
                     password: password,
                     password_confirmation: passwordConfirmation,
                 });
-                history.push('/login');
+                history.push(getRoute('login').path);
             }
-        } catch (error) {
-            if (error.status === 422) {
-                setErrors(error.errors);
+        } catch ({ errors, status }) {
+            if (status === 422) {
+                setErrors(errors);
+            } else if (status === 429) {
+                setErrors({
+                    email: ['Too many request! Try again Later'],
+                    password: [],
+                });
+            } else {
+                setErrors({
+                    email: ['Impossible to reach the server! Try again later'],
+                    password: [],
+                });
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
-        <ScreenCenter additionalCLasses="flex-col">
+        <Guest>
             <HeaderForm title="Reset Your Password" />
             <form
-                className="flex justify-center xl:w-1/3 md:w-1/2 w-full flex-col space-y-5 mx-auto px-4"
+                className="flex flex-col justify-center w-full px-4 mx-auto space-y-5 xl:w-1/3 md:w-1/2"
                 onSubmit={resetPassword}
             >
                 <InputForm
@@ -49,7 +64,7 @@ const ResetPassword = () => {
                     value={email}
                     placeholder="test@test.com"
                     handleValue={setEmail}
-                    error={errors && errors.email ? errors.email[0] : null}
+                    error={errors && errors.email ? errors.email[0] : undefined}
                 />
                 <InputForm
                     label="password"
@@ -58,7 +73,9 @@ const ResetPassword = () => {
                     value={password}
                     handleValue={setPassword}
                     error={
-                        errors && errors.password ? errors.password[0] : null
+                        errors && errors.password
+                            ? errors.password[0]
+                            : undefined
                     }
                 />
                 <InputForm
@@ -68,11 +85,11 @@ const ResetPassword = () => {
                     value={passwordConfirmation}
                     handleValue={setPasswordConfirmation}
                 />
-                <ButtonForm>
+                <ButtonForm isLoading={isLoading} full>
                     <span>Change Password</span>
                 </ButtonForm>
             </form>
-        </ScreenCenter>
+        </Guest>
     );
 };
 

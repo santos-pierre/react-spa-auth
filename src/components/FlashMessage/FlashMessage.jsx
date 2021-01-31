@@ -52,7 +52,7 @@ const FlashMessage = () => {
             case 'SUCCESS':
                 return (
                     <svg
-                        className="h-6 w-6 text-green-400"
+                        className="w-6 h-6 text-green-400"
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
@@ -98,13 +98,13 @@ const FlashMessage = () => {
                 leaveFrom="opacity-100"
                 leaveTo="opacity-0"
             >
-                <div className="fixed top-5 right-2 w-full flex items-end justify-center px-4 py-6 pointer-events-none sm:p-6 sm:items-start sm:justify-end">
-                    <div className="max-w-sm w-full bg-white shadow-lg rounded-lg pointer-events-auto ring-1 ring-black ring-opacity-5 overflow-hidden">
+                <div className="fixed flex items-end justify-center w-full px-4 py-6 pointer-events-none top-5 right-2 sm:p-6 sm:items-start sm:justify-end">
+                    <div className="w-full max-w-sm overflow-hidden bg-white rounded-lg shadow-lg pointer-events-auto ring-1 ring-black ring-opacity-5">
                         <div className="p-4">
                             <div className="flex items-start">
                                 <div className="flex-shrink-0">{icon}</div>
                                 <div className="ml-3 w-0 flex-1 pt-0.5">
-                                    <p className="text-sm leading-5 font-medium text-gray-900">
+                                    <p className="text-sm font-medium leading-5 text-gray-900">
                                         {notification.message}
                                     </p>
                                 </div>

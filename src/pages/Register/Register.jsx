@@ -1,47 +1,71 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import usersClient from '../../api/users/usersClient';
+import userClient from '../../api/users/usersClient';
 import ButtonForm from '../../components/ButtonForm/ButtonForm';
 import HeaderForm from '../../components/HeaderForm/HeaderForm';
 import InputForm from '../../components/InputForm/InputForm';
+import Guest from '../../layouts/Guest/Guest';
+import { getRoute } from '../../routes/routes';
 
 const Register = () => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [passwordConfirmation, setPasswordConfirmation] = useState('');
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState();
+    const [isLoading, setIsLoading] = useState();
+    const hasErrors = useRef(false);
     const history = useHistory();
 
     const register = async (e) => {
         e.preventDefault();
-        setErrors({});
+        setIsLoading(true);
+        hasErrors.current = false;
+        setErrors({ email: [], name: [], password: [] });
         try {
             if (email.trim() && password.trim() && name.trim()) {
-                await usersClient.registerUser({
+                await userClient.registerUser({
                     name: name,
                     email: email,
                     password: password,
                     password_confirmation: passwordConfirmation,
                 });
-                history.push('/');
+                history.push(getRoute('home').path);
             }
-        } catch (error) {
-            if (error.status === 422) {
-                setErrors(error.errors);
+        } catch ({ errors, status }) {
+            hasErrors.current = true;
+            if (status === 422) {
+                setErrors(errors);
+            } else if (status === 429) {
+                setErrors({
+                    email: ['Too many request! Try again Later'],
+                    name: [],
+                    password: [],
+                });
+            } else {
+                setErrors({
+                    email: ['Impossible to reach the server! Try again later'],
+                    name: [],
+                    password: [],
+                });
+            }
+        } finally {
+            setIsLoading(false);
+            if (!hasErrors.current) {
+                history.push(getRoute('home').path);
             }
         }
     };
 
     return (
-        <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <Guest>
             <HeaderForm
                 title="Create your account"
                 subTitle="Log in with an existing account"
-                link="/login"
+                link={getRoute('login').path}
             />
             <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-                <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+                <div className="px-4 py-8 bg-white shadow dark:bg-neutral-700 sm:rounded-lg sm:px-10">
                     <form onSubmit={register} className="space-y-6">
                         <InputForm
                             label="name"
@@ -51,7 +75,9 @@ const Register = () => {
                             placeholder="John Doe"
                             handleValue={setName}
                             error={
-                                errors && errors.name ? errors.name[0] : null
+                                errors && errors.name
+                                    ? errors.name[0]
+                                    : undefined
                             }
                         />
                         <InputForm
@@ -62,7 +88,9 @@ const Register = () => {
                             placeholder="test@test.com"
                             handleValue={setEmail}
                             error={
-                                errors && errors.email ? errors.email[0] : null
+                                errors && errors.email
+                                    ? errors.email[0]
+                                    : undefined
                             }
                         />
                         <InputForm
@@ -74,7 +102,7 @@ const Register = () => {
                             error={
                                 errors && errors.password
                                     ? errors.password[0]
-                                    : null
+                                    : undefined
                             }
                         />
                         <InputForm
@@ -84,13 +112,13 @@ const Register = () => {
                             value={passwordConfirmation}
                             handleValue={setPasswordConfirmation}
                         />
-                        <ButtonForm>
+                        <ButtonForm isLoading={isLoading} full>
                             <span>Register</span>
                         </ButtonForm>
                     </form>
                 </div>
             </div>
-        </div>
+        </Guest>
     );
 };
 

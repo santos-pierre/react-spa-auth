@@ -35,10 +35,10 @@ const BannerEmailVerification = ({ user }) => {
             enterTo="opacity-1"
         >
             <div>
-                <div className="bg-indigo-600 fixed bottom-0 w-full">
-                    <div className="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+                <div className="fixed bottom-0 w-full bg-support-600">
+                    <div className="px-3 py-3 mx-auto max-w-7xl sm:px-6 lg:px-8">
                         <div className="flex items-center justify-around">
-                            <div className="w-0 flex-1 flex items-center">
+                            <div className="flex items-center flex-1 w-0">
                                 <p className="ml-3 font-medium text-white truncate">
                                     <span>Your email is not verified</span>
                                 </p>
@@ -46,7 +46,7 @@ const BannerEmailVerification = ({ user }) => {
                             <div className="flex-shrink-0">
                                 <button
                                     onClick={sendEmailVerification}
-                                    className="flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-indigo-600 bg-white hover:bg-indigo-50 focus:outline-none"
+                                    className="flex items-center justify-center px-4 py-2 text-sm font-medium bg-white border border-transparent rounded-md shadow-sm text-support-600 hover:bg-support-50 focus:outline-none"
                                 >
                                     Resend Email
                                 </button>

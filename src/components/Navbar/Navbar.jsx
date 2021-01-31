@@ -1,60 +1,117 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { NavLink, useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { logout } from '../../redux/users/userActions';
+import { getAllNavLinks, getRoute } from '../../routes/routes';
+import NavLinkDesktop from './NavLinkDesktop';
+import { ReactComponent as Logo } from './../../logo.svg';
+import NavLinkMobile from './NavLinkMobile';
 
-const NavBar = () => {
+const Navbar = () => {
     const dispatch = useDispatch();
     const history = useHistory();
+    const [isOpen, setIsOpen] = useState(false);
     const logoutUser = useCallback(() => {
         dispatch(logout());
         history.push('/login');
     }, [dispatch, history]);
 
     return (
-        <div className="relative bg-white">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6">
-                <div className="flex justify-between items-center border-b-2 border-gray-100 py-6">
-                    <div className="flex justify-start lg:w-0 lg:flex-1">
-                        <NavLink to="/">
-                            <span className="sr-only">Workflow</span>
-                            <img
-                                className="h-8 w-auto sm:h-10"
-                                src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
-                                alt="logo"
-                            />
-                        </NavLink>
-                        <div className="hidden lg:ml-6 lg:flex lg:space-x-8">
-                            <NavLink
-                                to="/"
-                                exact
-                                activeClassName="border-indigo-500 text-gray-900 hover:border-indigo-500"
-                                className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                            >
-                                Dashboard
-                            </NavLink>
-                            <NavLink
-                                to="/profile"
-                                exact
-                                activeClassName="border-indigo-500 text-gray-900 hover:border-indigo-500"
-                                className="border-transparent text-gray-500  hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium"
-                            >
-                                Profile
-                            </NavLink>
-                        </div>
-                    </div>
-                    <div className="md:flex items-center justify-end md:flex-1 lg:w-0">
+        <nav className="bg-white shadow dark:bg-neutral-700">
+            <div className="px-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
+                <div className="relative flex justify-between h-16">
+                    <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
+                        {/* Mobile menu button */}
                         <button
-                            className="ml-8 whitespace-nowrap inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
-                            onClick={logoutUser}
+                            className="inline-flex items-center justify-center p-2 rounded-md text-neutral-400 hover:text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-400 dark:hover:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
+                            aria-expanded="false"
+                            onClick={() => setIsOpen(!isOpen)}
                         >
-                            Log Out
+                            <span className="sr-only">Open main menu</span>
+                            {/* Icon when menu is closed. */}
+                            <svg
+                                className={`${
+                                    isOpen ? 'hidden' : 'block'
+                                } w-6 h-6`}
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M4 6h16M4 12h16M4 18h16"
+                                />
+                            </svg>
+                            {/* Icon when menu is open. */}
+                            <svg
+                                className={`${
+                                    isOpen ? 'block' : 'hidden'
+                                } w-6 h-6`}
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
                         </button>
+                    </div>
+                    <div className="flex items-center justify-center flex-1 sm:items-stretch sm:justify-start">
+                        <div className="flex items-center flex-shrink-0">
+                            <Link to={getRoute('home').path}>
+                                <Logo className="w-auto h-10" />
+                            </Link>
+                        </div>
+                        <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
+                            {getAllNavLinks().map(({ name, path }) => {
+                                return (
+                                    <NavLinkDesktop to={path} exact key={name}>
+                                        {name}
+                                    </NavLinkDesktop>
+                                );
+                            })}
+                            <NavLinkDesktop
+                                to={getRoute('login').path}
+                                onClick={logoutUser}
+                            >
+                                Log Out
+                            </NavLinkDesktop>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+            {/*
+                Mobile menu, toggle classes based on menu state.
+            */}
+            <div className={`${isOpen ? 'block' : 'hidden'} sm:hidden`}>
+                <div className="pt-2 pb-4 space-y-1">
+                    {getAllNavLinks().map(({ name, path }) => {
+                        return (
+                            <NavLinkMobile to={path} exact key={name}>
+                                {name}
+                            </NavLinkMobile>
+                        );
+                    })}
+                    <NavLinkMobile
+                        to={getRoute('login').path}
+                        onClick={logoutUser}
+                    >
+                        Log Out
+                    </NavLinkMobile>
+                </div>
+            </div>
+        </nav>
     );
 };
 
-export default NavBar;
+export default Navbar;

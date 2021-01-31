@@ -1,17 +1,17 @@
 import { useSelector } from 'react-redux';
-import FlashMessage from '../../components/FlashMessage/FlashMessage';
 import BannerEmailVerification from '../../components/BannerEmailVerification/BannerEmailVerification';
-import NavBar from '../../components/Navbar/Navbar';
+import FlashMessage from '../../components/FlashMessage/FlashMessage';
 import { getUser } from '../../redux/users/userSelectors';
+import Navbar from './../../components/Navbar/Navbar';
 
 const Auth = ({ children }) => {
     const user = useSelector(getUser);
 
     return (
-        <div className="relative">
-            <NavBar />
+        <div className="h-full dark:bg-neutral-800 bg-neutral-100 dark:text-neutral-200 text-neutral-900">
+            <Navbar />
             <main>
-                <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+                <div className="py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="px-4 py-6 sm:px-0">{children}</div>
                 </div>
             </main>

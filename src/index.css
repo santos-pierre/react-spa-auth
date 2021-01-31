@@ -2,4 +2,19 @@
 
 @tailwind components;
 
+div#root {
+    @apply h-full;
+}
+
+
 @tailwind utilities;
+
+
+@layer base {
+    html {
+        @apply h-full;
+    }
+    body {
+        @apply h-full;
+    }
+}

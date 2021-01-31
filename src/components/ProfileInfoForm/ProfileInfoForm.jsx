@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import usersClient from '../../api/users/usersClient';
+import userClient from '../../api/users/usersClient';
 import { setNotification } from '../../redux/notifications/notificationActions';
 import { setCurrentUser } from '../../redux/users/userActions';
 import { getUser } from '../../redux/users/userSelectors';
+import ButtonForm from '../ButtonForm/ButtonForm';
 import InputForm from '../InputForm/InputForm';
 
 const ProfileInfoForm = () => {
@@ -11,14 +12,16 @@ const ProfileInfoForm = () => {
     const dispatch = useDispatch();
     const [name, setName] = useState(user.name);
     const [email, setEmail] = useState(user.email);
-    const [errors, setErrors] = useState({});
+    const [errors, setErrors] = useState();
+    const [isLoading, setIsLoading] = useState(false);
 
     const updateProfile = async (e) => {
-        setErrors({});
+        setIsLoading(true);
+        setErrors({ email: [], name: [] });
         e.preventDefault();
         try {
             if (user.name !== name || user.email !== email) {
-                await usersClient.updateUser({ name: name, email: email });
+                await userClient.updateUser({ name: name, email: email });
                 dispatch(
                     setNotification({
                         message: 'Profile Saved',
@@ -46,24 +49,23 @@ const ProfileInfoForm = () => {
                     })
                 );
             }
+        } finally {
+            setIsLoading(false);
         }
     };
 
     return (
         <div className="space-y-6 sm:px-6 lg:px-0 lg:col-span-9">
-            <section aria-labelledby="payment_details_heading">
+            <section>
                 <form onSubmit={updateProfile}>
                     <div className="shadow sm:rounded-md sm:overflow-hidden">
-                        <div className="bg-white py-6 px-4 sm:p-6">
+                        <div className="px-4 py-6 bg-white dark:bg-neutral-700 sm:p-6 text-neutral-900 dark:text-neutral-200">
                             <div>
-                                <h2
-                                    id="payment_details_heading"
-                                    className="text-lg leading-6 font-medium text-gray-900"
-                                >
+                                <h2 className="text-lg font-medium leading-6">
                                     Profile Info
                                 </h2>
                             </div>
-                            <div className="mt-6 grid grid-cols-4 gap-6">
+                            <div className="grid grid-cols-4 gap-6 mt-6">
                                 <InputForm
                                     name="name"
                                     label="name"
@@ -73,7 +75,7 @@ const ProfileInfoForm = () => {
                                     error={
                                         errors && errors.name
                                             ? errors.name[0]
-                                            : null
+                                            : undefined
                                     }
                                 />
                                 <InputForm
@@ -85,29 +87,13 @@ const ProfileInfoForm = () => {
                                     error={
                                         errors && errors.email
                                             ? errors.email[0]
-                                            : null
+                                            : undefined
                                     }
                                 />
                             </div>
                         </div>
-                        <div className="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                            <button
-                                disabled={
-                                    !(
-                                        user.name !== name ||
-                                        user.email !== email
-                                    )
-                                }
-                                type="submit"
-                                className={`bg-indigo-600 border border-transparent rounded-md shadow-sm py-2 px-4 inline-flex justify-center text-sm font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-700 ${
-                                    !(
-                                        user.name !== name ||
-                                        user.email !== email
-                                    ) && 'cursor-not-allowed'
-                                }`}
-                            >
-                                Save
-                            </button>
+                        <div className="flex justify-end px-4 py-3 bg-neutral-50 dark:bg-neutral-600 sm:px-6">
+                            <ButtonForm isLoading={isLoading}>Save</ButtonForm>
                         </div>
                     </div>
                 </form>
