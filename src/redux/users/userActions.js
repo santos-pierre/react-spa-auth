@@ -25,7 +25,6 @@ export const logout = () => async (dispatch) => {
         dispatch(setCurrentUser(null));
         return Promise.resolve(response);
     } catch (errors) {
-        dispatch(setErrors(errors));
         return Promise.resolve(errors);
     }
 };
