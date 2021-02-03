@@ -1,13 +1,15 @@
 import { useCallback, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useHistory } from 'react-router-dom';
 import { logout } from '../../redux/users/userActions';
 import { getAllNavLinks, getRoute } from '../../routes/routes';
 import NavLinkDesktop from './NavLinkDesktop';
 import { ReactComponent as Logo } from './../../logo.svg';
 import NavLinkMobile from './NavLinkMobile';
+import { getUser } from '../../redux/users/userSelectors';
 
 const Navbar = () => {
+    const user = useSelector(getUser);
     const dispatch = useDispatch();
     const history = useHistory();
     const [isOpen, setIsOpen] = useState(false);
@@ -74,11 +76,23 @@ const Navbar = () => {
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                             {getAllNavLinks().map(({ name, path }) => {
-                                return (
-                                    <NavLinkDesktop to={path} exact key={name}>
-                                        {name}
-                                    </NavLinkDesktop>
-                                );
+                                // If this is a Github User remove the profile link to it.
+                                if (
+                                    !(
+                                        user.is_github_account &&
+                                        name === 'Profile'
+                                    )
+                                ) {
+                                    return (
+                                        <NavLinkDesktop
+                                            to={path}
+                                            exact
+                                            key={name}
+                                        >
+                                            {name}
+                                        </NavLinkDesktop>
+                                    );
+                                }
                             })}
                             <NavLinkDesktop
                                 to={getRoute('login').path}
@@ -96,11 +110,14 @@ const Navbar = () => {
             <div className={`${isOpen ? 'block' : 'hidden'} sm:hidden`}>
                 <div className="pt-2 pb-4 space-y-1">
                     {getAllNavLinks().map(({ name, path }) => {
-                        return (
-                            <NavLinkMobile to={path} exact key={name}>
-                                {name}
-                            </NavLinkMobile>
-                        );
+                        // If this is a Github User remove the profile link to it.
+                        if (!(user.is_github_account && name === 'Profile')) {
+                            return (
+                                <NavLinkMobile to={path} exact key={name}>
+                                    {name}
+                                </NavLinkMobile>
+                            );
+                        }
                     })}
                     <NavLinkMobile
                         to={getRoute('login').path}
