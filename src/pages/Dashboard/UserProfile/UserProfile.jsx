@@ -22,7 +22,7 @@ const UserProfile = () => {
                     <PasswordChangeForm />
                 </>
             ) : (
-                <Redirect to={getRoute('home')} />
+                <Redirect to={getRoute('home').path} />
             )}
         </Auth>
     );
