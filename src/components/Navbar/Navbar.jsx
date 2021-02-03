@@ -75,25 +75,17 @@ const Navbar = () => {
                             </Link>
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                            {getAllNavLinks().map(({ name, path }) => {
+                            {getAllNavLinks().map(({ name, path }) =>
                                 // If this is a Github User remove the profile link to it.
-                                if (
-                                    !(
-                                        user.is_github_account &&
-                                        name === 'Profile'
-                                    )
-                                ) {
-                                    return (
-                                        <NavLinkDesktop
-                                            to={path}
-                                            exact
-                                            key={name}
-                                        >
-                                            {name}
-                                        </NavLinkDesktop>
-                                    );
-                                }
-                            })}
+
+                                !(
+                                    user.is_github_account && name === 'Profile'
+                                ) ? (
+                                    <NavLinkDesktop to={path} exact key={name}>
+                                        {name}
+                                    </NavLinkDesktop>
+                                ) : null
+                            )}
                             <NavLinkDesktop
                                 to={getRoute('login').path}
                                 onClick={logoutUser}
@@ -109,16 +101,14 @@ const Navbar = () => {
             */}
             <div className={`${isOpen ? 'block' : 'hidden'} sm:hidden`}>
                 <div className="pt-2 pb-4 space-y-1">
-                    {getAllNavLinks().map(({ name, path }) => {
+                    {getAllNavLinks().map(({ name, path }) =>
                         // If this is a Github User remove the profile link to it.
-                        if (!(user.is_github_account && name === 'Profile')) {
-                            return (
-                                <NavLinkMobile to={path} exact key={name}>
-                                    {name}
-                                </NavLinkMobile>
-                            );
-                        }
-                    })}
+                        !(user.is_github_account && name === 'Profile') ? (
+                            <NavLinkMobile to={path} exact key={name}>
+                                {name}
+                            </NavLinkMobile>
+                        ) : null
+                    )}
                     <NavLinkMobile
                         to={getRoute('login').path}
                         onClick={logoutUser}
